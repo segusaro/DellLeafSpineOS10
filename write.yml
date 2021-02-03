@@ -1,0 +1,11 @@
+- collections:
+  - dellemc.os10
+  connection: network_cli
+  gather_facts: false
+  hosts:
+  - leaf_spine
+  tasks:
+    - name: "Saving configuration"
+      os10_command:
+        commands:
+          - write

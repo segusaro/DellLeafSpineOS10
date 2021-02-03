@@ -1,0 +1,131 @@
+os10_system:
+  hostname: pd99-esp-001
+os10_bgp:
+  asn: 4210199000
+  best_path:
+    as_path: multipath-relax
+  graceful_restart: true
+  maxpath_ebgp: 2
+  bfd_all_neighbors:
+    interval: 100
+    min_rx: 100
+    multiplier: 3
+    role: active
+    state: present
+  neighbor:
+  - adv_interval: 1
+    fall_over: present
+    name: spine-leaf
+    timer: 3 9
+    type: peergroup
+    address_family:
+    - allow_as_in: 1
+      sender_loop_detect: false
+      type: ipv4
+  - ip: 169.254.13.1
+    admin: up  
+    description: pd99-ebr-001
+    peergroup: spine-leaf
+    remote_asn: 4210199999
+    type: ipv4
+  - ip: 169.254.23.1
+    admin: up
+    description: pd99-ebr-002
+    peergroup: spine-leaf
+    remote_asn: 4210199999
+    type: ipv4
+  - ip: 169.254.35.1
+    admin: up  
+    description: pd99-elf-001
+    peergroup: spine-leaf
+    remote_asn: 4210199001
+    type: ipv4
+  - ip: 169.254.36.1
+    admin: up  
+    description: pd99-elf-002
+    peergroup: spine-leaf
+    remote_asn: 4210199001
+    type: ipv4
+  redistribute:
+  - address_type: ipv4
+    route_map_name: spine-leaf
+    route_type: connected
+  router_id: 10.99.0.3
+os10_interface:
+  ethernet 1/1/1:
+    admin: up
+    desc: to pd99-ebr-001 e1/1/1
+    ip_and_mask: 169.254.13.0/31
+    mtu: 9216
+    switchport: false
+  ethernet 1/1/2:
+    admin: up
+    desc: to pd99-ebr-002 e1/1/2
+    ip_and_mask: 169.254.23.0/31
+    mtu: 9216
+    switchport: false
+  ethernet 1/1/20:
+    admin: up
+    desc: to pd99-elf-001 e1/1/53
+    ip_and_mask: 169.254.35.0/31
+    mtu: 9216
+    switchport: false
+  ethernet 1/1/21:
+    admin: up
+    desc: to pd99-elf-002 e1/1/54
+    ip_and_mask: 169.254.36.0/31
+    mtu: 9216
+    switchport: false
+  loopback 0:
+    admin: up
+    ip_and_mask: 10.99.0.3/32
+os10_lldp:
+  enable: true
+os10_bfd:
+  bfd:
+    state: present
+os10_prefix_list:
+- entries:
+  - condition_list:
+    - condition: ge
+      prelen: '24'
+    mask: '16'
+    net_num: 10.99.0.0
+    number: 10
+    permit: true
+    state: present
+  - condition_list:
+    - condition: ge
+      prelen: '24'
+    mask: '16'
+    net_num: 169.254.0.0
+    number: 20
+    permit: true
+    state: present
+  - condition_list:
+    - condition: ge
+      prelen: '24'
+    mask: '16'
+    net_num: 172.10.0.0
+    number: 30
+    permit: true
+    state: present
+  name: spine-leaf
+  state: present
+  type: ipv4
+os10_route_map:
+  route_map:
+  - match:
+    - ip_type: ipv4
+      prefix_list: spine-leaf
+    name: spine-leaf
+    permit: true
+    seq_num: 10
+os10_xstp:
+  enable: false
+
+os10_ntp:
+  server:
+    - ip: 143.166.255.32
+      prefer: true
+      state: present

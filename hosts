@@ -1,0 +1,9 @@
+[leaf_spine]
+pd99-ebr-001 ansible_host=10.204.10.11 ansible_network_os="dellemc.os10.os10" 
+pd99-ebr-002 ansible_host=10.204.10.12 ansible_network_os="dellemc.os10.os10" 
+pd99-esp-001 ansible_host=10.204.10.13 ansible_network_os="dellemc.os10.os10" 
+pd99-esp-002 ansible_host=10.204.10.14 ansible_network_os="dellemc.os10.os10" 
+pd99-elf-001 ansible_host=10.204.10.15 ansible_network_os="dellemc.os10.os10" 
+pd99-elf-002 ansible_host=10.204.10.16 ansible_network_os="dellemc.os10.os10" 
+pd99-eag-001 ansible_host=10.204.10.17 ansible_network_os="dellemc.os10.os10" 
+pd99-eag-002 ansible_host=10.204.10.18 ansible_network_os="dellemc.os10.os10" 

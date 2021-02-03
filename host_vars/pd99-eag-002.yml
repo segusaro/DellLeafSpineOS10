@@ -1,0 +1,83 @@
+os10_system:
+  hostname: pd99-eag-002
+os10_interface:
+  ethernet 1/1/29:
+    admin: up
+    desc: VLT to pd99-eag-001 1/1/29
+    mtu: 9216
+    switchport: false
+  ethernet 1/1/30:
+    admin: up
+    desc: VLT to pd99-eag-001 1/1/30
+    mtu: 9216
+    switchport: false
+  ethernet 1/1/25:
+    admin: up
+    desc: to pd99-elf-002 1/1/49
+    mtu: 9216
+    switchport: false
+  ethernet 1/1/26:
+    admin: up
+    desc: to pd99-elf-001 1/1/51
+    mtu: 9216
+    switchport: false
+  ethernet 1/1/1:
+    admin: up
+    desc: to baremetal server
+    mtu: 9216
+#    portmode: trunk
+    switchport: true
+  Po 1:
+    admin: up
+    desc: to pd99-elf-001 and pd99-elf-002
+    mtu: 9216
+    portmode: trunk
+    switchport: true
+  loopback 0:
+    admin: up
+    ip_and_mask: 10.99.0.8/32
+os10_lag:
+  Po 1:
+    type: dynamic
+    channel_members:
+      - port: ethernet 1/1/25
+        mode: active
+      - port: ethernet 1/1/26
+        mode: active
+    state: present
+os10_lldp:
+  enable: true
+os10_vlan:
+  Vlan 30:
+    description: baremetal server
+    state: present
+    tagged_members:
+    - port: Po 1
+      state: present
+    untagged_members:
+    - port: ethernet 1/1/1
+      state: present
+os10_vlt:
+  backup_destination: 10.204.10.17
+  destination_type: ipv4
+  discovery_intf: 1/1/29-1/1/30
+  discovery_intf_state: present
+  domain: 127
+  peer_routing: true
+  vlt_mac: 00:00:00:00:00:03
+  vlt_peers:
+    Po 1:
+      peer_lag: 1
+
+os10_xstp:
+  enable: true
+  intf:
+    ethernet 1/1/1:
+      edge_port: true
+  type: rstp
+
+os10_ntp:
+  server:
+    - ip: 143.166.255.32
+      prefer: true
+      state: present

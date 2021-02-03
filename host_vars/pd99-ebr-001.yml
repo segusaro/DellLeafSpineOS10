@@ -1,0 +1,156 @@
+os10_system:
+  hostname: pd99-ebr-001
+os10_bgp:
+  asn: 4210199999
+  best_path:
+    as_path: multipath-relax
+  graceful_restart: true
+  maxpath_ebgp: 2
+  bfd_all_neighbors:
+    interval: 100
+    min_rx: 100
+    multiplier: 3
+    role: active
+    state: present
+  neighbor:
+  - adv_interval: 1
+    fall_over: present
+    name: spine-leaf
+    timer: 3 9
+    type: peergroup
+    address_family:
+    - allow_as_in: 1
+      type: ipv4
+  - ip: 169.254.13.0
+    admin: up  
+    description: pd99-esp-001
+    peergroup: spine-leaf
+    remote_asn: 4210199000
+    type: ipv4
+  - ip: 169.254.14.0
+    admin: up
+    description: pd99-esp-002
+    peergroup: spine-leaf
+    remote_asn: 4210199000
+    type: ipv4
+  redistribute:
+  - address_type: ipv4
+    route_map_name: spine-leaf
+    route_type: connected
+  router_id: 10.99.0.1
+os10_interface:
+  ethernet 1/1/1:
+    admin: up
+    desc: to pd99-esp-001 e1/1/1
+    ip_and_mask: 169.254.13.1/31
+    mtu: 9216
+    switchport: false
+  ethernet 1/1/2:
+    admin: up
+    desc: to pd99-esp-002 e1/1/2
+    ip_and_mask: 169.254.14.1/31
+    mtu: 9216
+    switchport: false
+  ethernet 1/1/31:
+    admin: up
+    desc: VLT to pd99-ebr-002 1/1/31
+    mtu: 9216
+    switchport: false
+  ethernet 1/1/32:
+    admin: up
+    desc: VLT to pd99-ebr-002 1/1/32
+    mtu: 9216
+    switchport: false
+  ethernet 1/1/33:
+    admin: up
+    desc: to compute server 1
+    mtu: 9216
+#    portmode: trunk
+    switchport: true
+  loopback 0:
+    admin: up
+    ip_and_mask: 10.99.0.1/32
+os10_lldp:
+  enable: true
+os10_bfd:
+  bfd:
+    state: present
+os10_prefix_list:
+- entries:
+  - condition_list:
+    - condition: ge
+      prelen: '24'
+    mask: '16'
+    net_num: 10.99.0.0
+    number: 10
+    permit: true
+    state: present
+  - condition_list:
+    - condition: ge
+      prelen: '24'
+    mask: '16'
+    net_num: 169.254.0.0
+    number: 20
+    permit: true
+    state: present
+  - condition_list:
+    - condition: ge
+      prelen: '24'
+    mask: '16'
+    net_num: 172.10.0.0
+    number: 30
+    permit: true
+    state: present
+  name: spine-leaf
+  state: present
+  type: ipv4
+os10_route_map:
+  route_map:
+  - match:
+    - ip_type: ipv4
+      prefix_list: spine-leaf
+    name: spine-leaf
+    permit: true
+    seq_num: 10
+os10_vlan:
+  vlan 10:
+    description: external vlan
+    ip_and_mask: 172.10.10.253/24
+    state: present
+    untagged_members:
+    - port: ethernet 1/1/33
+      state: present
+
+os10_vrrp:
+  vlan 10:
+    vrrp_group:
+      - group_id: 1
+        virtual_address:
+          - ip: 172.10.10.1
+            state: present
+        priority: 200
+        state: present
+
+os10_vlt:
+  backup_destination: 10.204.10.12
+  destination_type: ipv4
+  discovery_intf: 1/1/31-1/1/32
+  discovery_intf_state: present
+  domain: 127
+  peer_routing: true
+  vlt_mac: 00:00:00:00:00:01
+
+os10_xstp:
+  enable: true
+  intf:
+    ethernet 1/1/33:
+      edge_port: true
+  rstp:
+    bridge_priority: 0
+  type: rstp
+
+os10_ntp:
+  server:
+    - ip: 143.166.255.32
+      prefer: true
+      state: present

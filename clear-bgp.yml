@@ -1,0 +1,11 @@
+- collections:
+  - dellemc.os10
+  connection: network_cli
+  gather_facts: false
+  hosts:
+  - leaf_spine
+  tasks:
+    - name: "Clear all BGP sessions"
+      os10_config:
+        commands:
+          - clear ip bgp *

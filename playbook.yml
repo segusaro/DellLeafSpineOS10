@@ -1,0 +1,27 @@
+- collections:
+  - dellemc.os10
+  connection: network_cli
+  gather_facts: false
+  hosts:
+  - leaf_spine
+  roles:
+  - os10_interface
+  - os10_vlan
+  - os10_lag
+  - os10_vlt
+  - os10_lldp
+  - os10_system
+  # - os10_users
+  - os10_route_map
+  # - os10_ecmp
+  - os10_prefix_list
+  - os10_bgp
+  - os10_bfd
+  - os10_xstp
+  # - os10_vrf
+  # - os10_snmp
+  - os10_ntp
+  # - os10_logging
+  # - os10_copy_config
+  - os10_vrrp
+
