@@ -1,0 +1,17 @@
+{
+    "ietf-interfaces:interfaces": {
+        "interface": [
+            {
+                "name": "ethernet1/1/5",
+                "description": "Created using REST API",
+                "dell-ip:ipv4": {
+                    "address": {
+                        "primary-addr": "169.254.111.0/31"
+                    }
+                },
+                "dell-interface:mode": "MODE_L2DISABLED",
+                "dell-interface:mtu": 9216
+            }
+        ]
+    }
+}
