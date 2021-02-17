@@ -1,2 +1,2 @@
 # DellLeafSpineOS10
-![Network topology](../master/network-topology.png?raw=true "Network topology")
+![Network topology](../master/network%20topology.png?raw=true "Network topology")
