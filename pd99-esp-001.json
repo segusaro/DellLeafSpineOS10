@@ -1,0 +1,2459 @@
+{
+    "ietf-restconf:data": {
+        "dell-system:aaa": {
+            "authentication": {
+                "user-authentication-order": [
+                    "local"
+                ]
+            },
+            "console": {
+                "user-authentication-order": [
+                    "local"
+                ]
+            }
+        },
+        "dell-bgp:bgp-router": {
+            "vrf": [
+                {
+                    "vrf-name": "default",
+                    "local-as-number": "4210199000",
+                    "bfd": {
+                        "all-nbrs": true,
+                        "bfd-interval": 100,
+                        "min_rx": 100,
+                        "multiplier": 3,
+                        "bfd-role": "active"
+                    },
+                    "bestpath": {
+                        "aspath-multipath-relax": [
+                            null
+                        ]
+                    },
+                    "graceful-restart": {
+                        "helper-only": true
+                    },
+                    "router-id": "10.99.0.3",
+                    "ebgp-number-of-path": 2,
+                    "peer-group-config": [
+                        {
+                            "name": "spine-leaf",
+                            "fall-over": [
+                                null
+                            ],
+                            "timers": {
+                                "config-keepalive": 3,
+                                "config-hold-time": 9
+                            },
+                            "advertisement-interval": 1,
+                            "ipv4-unicast": {
+                                "allowas-in": 1,
+                                "sender-side-loop-detection": false
+                            }
+                        }
+                    ],
+                    "peer-config": [
+                        {
+                            "remote-address": "169.254.13.1",
+                            "remote-as": 4210199999,
+                            "associate-peer-group": "spine-leaf",
+                            "description": "pd99-ebr-001",
+                            "shutdown-status": false
+                        },
+                        {
+                            "remote-address": "169.254.23.1",
+                            "remote-as": 4210199999,
+                            "associate-peer-group": "spine-leaf",
+                            "description": "pd99-ebr-002",
+                            "shutdown-status": false
+                        },
+                        {
+                            "remote-address": "169.254.35.1",
+                            "remote-as": 4210199001,
+                            "associate-peer-group": "spine-leaf",
+                            "description": "pd99-elf-001",
+                            "shutdown-status": false,
+                            "ipv4-unicast": {
+                                "route-map-in": "RM_FROM_LEAF"
+                            }
+                        },
+                        {
+                            "remote-address": "169.254.36.1",
+                            "remote-as": 4210199001,
+                            "associate-peer-group": "spine-leaf",
+                            "description": "pd99-elf-002",
+                            "shutdown-status": false,
+                            "ipv4-unicast": {
+                                "route-map-in": "RM_FROM_LEAF"
+                            }
+                        }
+                    ],
+                    "ipv4-unicast": {
+                        "aggregate-address-list": [
+                            {
+                                "prefix": "172.20.0.0/16",
+                                "aggregate-options": {
+                                    "summary-only": [
+                                        null
+                                    ]
+                                }
+                            }
+                        ],
+                        "redistribute-connected": {
+                            "enable": [
+                                null
+                            ],
+                            "redistribute-route-map": "spine-leaf"
+                        }
+                    }
+                }
+            ]
+        },
+        "dell-diffserv-classifier:classifier-entry": [
+            {
+                "name": "class-iscsi",
+                "mtype": "application"
+            }
+        ],
+        "dell-cli:cli-config": {
+            "features": [
+                {
+                    "name": "config-os9-style"
+                }
+            ]
+        },
+        "dell-policy:config": {
+            "prefix-list": [
+                {
+                    "name": "spine-leaf",
+                    "ip-version": "ipv4",
+                    "rule": [
+                        {
+                            "seq-no": 10,
+                            "ip-address": "10.99.0.0/16",
+                            "comparator": "ge-only",
+                            "value1": 24,
+                            "packet-handling": "permit"
+                        },
+                        {
+                            "seq-no": 20,
+                            "ip-address": "169.254.0.0/16",
+                            "comparator": "ge-only",
+                            "value1": 24,
+                            "packet-handling": "permit"
+                        },
+                        {
+                            "seq-no": 30,
+                            "ip-address": "172.10.0.0/16",
+                            "comparator": "ge-only",
+                            "value1": 24,
+                            "packet-handling": "permit"
+                        }
+                    ]
+                }
+            ],
+            "community": [
+                {
+                    "name": "CL_NO_ADV",
+                    "mode": "standard",
+                    "std-rule": [
+                        {
+                            "community-number": "65000:9",
+                            "packet-handling": "permit"
+                        }
+                    ]
+                }
+            ],
+            "route-map": [
+                {
+                    "rm-name": "spine-leaf",
+                    "rule": [
+                        {
+                            "seq-no": 10,
+                            "packet-handling": "permit",
+                            "match-node": {
+                                "ipv4-route-prefix-list": "spine-leaf"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "rm-name": "RM_FROM_LEAF",
+                    "rule": [
+                        {
+                            "seq-no": 10,
+                            "packet-handling": "permit",
+                            "match-node": {
+                                "community": "CL_NO_ADV"
+                            }
+                        },
+                        {
+                            "seq-no": 20,
+                            "packet-handling": "permit"
+                        }
+                    ]
+                }
+            ]
+        },
+        "dell-xstp:config": {
+            "system-params": [
+                {
+                    "br-index": 0,
+                    "stp-enable": "false"
+                }
+            ]
+        },
+        "dell-bfd:global-bfd-config": {
+            "enable": true
+        },
+        "dell-lldp:global-params": {},
+        "ietf-interfaces:interfaces": {
+            "interface": [
+                {
+                    "name": "ethernet1/1/1",
+                    "description": "to pd99-ebr-001 e1/1/1",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-ip:ipv4": {
+                        "address": {
+                            "primary-addr": "169.254.13.0/31"
+                        }
+                    },
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-interface:mode": "MODE_L2DISABLED",
+                    "dell-interface:mtu": 9216,
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/2",
+                    "description": "to pd99-ebr-002 e1/1/2",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-ip:ipv4": {
+                        "address": {
+                            "primary-addr": "169.254.23.0/31"
+                        }
+                    },
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-interface:mode": "MODE_L2DISABLED",
+                    "dell-interface:mtu": 9216,
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/3",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/4",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/5",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/6",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/7",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/8",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/9",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/10",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/11",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/12",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/13",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/14",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/15",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/16",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/17",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/18",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/19",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/20",
+                    "description": "to pd99-elf-001 e1/1/53",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-ip:ipv4": {
+                        "address": {
+                            "primary-addr": "169.254.35.0/31"
+                        }
+                    },
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-interface:mode": "MODE_L2DISABLED",
+                    "dell-interface:mtu": 9216,
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/21",
+                    "description": "to pd99-elf-002 e1/1/54",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-ip:ipv4": {
+                        "address": {
+                            "primary-addr": "169.254.36.0/31"
+                        }
+                    },
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-interface:mode": "MODE_L2DISABLED",
+                    "dell-interface:mtu": 9216,
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/22",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/23",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/24",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/25",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/26",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/27",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/28",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/29",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/30",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/31",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/32",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/33",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/34",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/35",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/36",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/37",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/38",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/39",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/40",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/41",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/42",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/43",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/44",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/45",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/46",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/47",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/48",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/49",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/50",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/51",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/52",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/53",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/54",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/55",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/56",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/57",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/58",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/59",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/60",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/61",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/62",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/63",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/64",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/65",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "ethernet1/1/66",
+                    "type": "iana-if-type:ethernetCsmacd",
+                    "dell-lldp:lldp": {},
+                    "dell-lldp-med:lldp-med-cfg": {},
+                    "dell-qos:qos-cfg": {
+                        "flow-control-rx": false
+                    }
+                },
+                {
+                    "name": "mgmt1/1/1",
+                    "type": "dell-base-interface-common:management",
+                    "dell-ip:ipv4": {
+                        "address": {
+                            "primary-addr": "10.204.10.13/24"
+                        }
+                    },
+                    "dell-ip:ipv6": {
+                        "autoconfig": true
+                    },
+                    "dell-lldp:lldp": {},
+                    "dell-interface:mtu": 1532
+                },
+                {
+                    "name": "null0",
+                    "type": "dell-base-interface-common:null"
+                },
+                {
+                    "name": "vlan1",
+                    "type": "iana-if-type:l2vlan",
+                    "dell-interface:untagged-ports": [
+                        "ethernet1/1/3",
+                        "ethernet1/1/4",
+                        "ethernet1/1/6",
+                        "ethernet1/1/7",
+                        "ethernet1/1/8",
+                        "ethernet1/1/9",
+                        "ethernet1/1/10",
+                        "ethernet1/1/11",
+                        "ethernet1/1/12",
+                        "ethernet1/1/13",
+                        "ethernet1/1/14",
+                        "ethernet1/1/15",
+                        "ethernet1/1/16",
+                        "ethernet1/1/17",
+                        "ethernet1/1/18",
+                        "ethernet1/1/19",
+                        "ethernet1/1/22",
+                        "ethernet1/1/23",
+                        "ethernet1/1/24",
+                        "ethernet1/1/25",
+                        "ethernet1/1/26",
+                        "ethernet1/1/27",
+                        "ethernet1/1/28",
+                        "ethernet1/1/29",
+                        "ethernet1/1/30",
+                        "ethernet1/1/31",
+                        "ethernet1/1/32",
+                        "ethernet1/1/33",
+                        "ethernet1/1/34",
+                        "ethernet1/1/35",
+                        "ethernet1/1/36",
+                        "ethernet1/1/37",
+                        "ethernet1/1/38",
+                        "ethernet1/1/39",
+                        "ethernet1/1/40",
+                        "ethernet1/1/41",
+                        "ethernet1/1/42",
+                        "ethernet1/1/43",
+                        "ethernet1/1/44",
+                        "ethernet1/1/45",
+                        "ethernet1/1/46",
+                        "ethernet1/1/47",
+                        "ethernet1/1/48",
+                        "ethernet1/1/49",
+                        "ethernet1/1/50",
+                        "ethernet1/1/51",
+                        "ethernet1/1/52",
+                        "ethernet1/1/53",
+                        "ethernet1/1/54",
+                        "ethernet1/1/55",
+                        "ethernet1/1/56",
+                        "ethernet1/1/57",
+                        "ethernet1/1/58",
+                        "ethernet1/1/59",
+                        "ethernet1/1/60",
+                        "ethernet1/1/61",
+                        "ethernet1/1/62",
+                        "ethernet1/1/63",
+                        "ethernet1/1/64",
+                        "ethernet1/1/65",
+                        "ethernet1/1/66",
+                        "ethernet1/1/5"
+                    ]
+                },
+                {
+                    "name": "loopback0",
+                    "type": "iana-if-type:softwareLoopback",
+                    "dell-ip:ipv4": {
+                        "address": {
+                            "primary-addr": "10.99.0.3/32"
+                        }
+                    }
+                }
+            ],
+            "dell-interface:vlan-globals": {}
+        },
+        "dell-ip:ip-config": {
+            "ipv6": {
+                "ipv6-enable": true,
+                "unicast-routing": true
+            }
+        },
+        "dell-management-routing:ipv4-mgmt-routes": {
+            "route": [
+                {
+                    "destination-prefix": "0.0.0.0/0",
+                    "forwarding-router-address": "10.204.10.1"
+                }
+            ]
+        },
+        "dell-iscsi-optimization:iscsi-cfg": {
+            "target": [
+                {
+                    "port": 3260
+                },
+                {
+                    "port": 860
+                }
+            ]
+        },
+        "dell-multicast-snooping:mcast-snooping-global-config": {
+            "igmp-snooping": {},
+            "mld-snooping": {}
+        },
+        "ietf-netconf-acm:nacm": {
+            "groups": {
+                "group": [
+                    {
+                        "name": "netoperator",
+                        "user-name": [
+                            "guest"
+                        ]
+                    },
+                    {
+                        "name": "netadmin"
+                    },
+                    {
+                        "name": "secadmin"
+                    },
+                    {
+                        "name": "sysadmin",
+                        "user-name": [
+                            "admin",
+                            "amazon"
+                        ]
+                    },
+                    {
+                        "name": "service",
+                        "user-name": [
+                            "service"
+                        ]
+                    }
+                ]
+            },
+            "rule-list": [
+                {
+                    "name": "guest-acl",
+                    "group": [
+                        "netoperator"
+                    ],
+                    "rule": [
+                        {
+                            "name": "permit-edit-config",
+                            "module-name": "ietf-netconf",
+                            "rpc-name": "edit-config",
+                            "access-operations": "create update delete exec",
+                            "action": "deny",
+                            "comment": "Do not allow guests to edit the configuration."
+                        }
+                    ]
+                },
+                {
+                    "name": "sysadmin-acl",
+                    "group": [
+                        "sysadmin"
+                    ],
+                    "rule": [
+                        {
+                            "name": "permit-all",
+                            "action": "permit",
+                            "comment": "Allow the admin group complete access except serviceability commands"
+                        }
+                    ]
+                },
+                {
+                    "name": "service-acl",
+                    "group": [
+                        "service"
+                    ],
+                    "rule": [
+                        {
+                            "name": "permit-all",
+                            "action": "permit",
+                            "comment": "Allow the service group complete access to all operations and data"
+                        }
+                    ]
+                }
+            ]
+        },
+        "dell-ntp:ntp-config": {
+            "servers": {
+                "server": [
+                    {
+                        "address": "143.166.255.32",
+                        "prefer": true
+                    }
+                ]
+            }
+        },
+        "dell-diffserv-policy:policy-entry": [
+            {
+                "name": "policy-iscsi",
+                "ptype": "application"
+            }
+        ],
+        "dell-port-group:port-groups": {
+            "hybrid-group": [
+                {
+                    "id": "port-group1/1/1",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/1",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/2",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/2",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/3",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/4",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/3",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/5",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/6",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/4",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/7",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/8",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/5",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/9",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/10",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/6",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/11",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/12",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/7",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/13",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/14",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/8",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/15",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/16",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/9",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/17",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/18",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/10",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/19",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/20",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/11",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/21",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/22",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/12",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/23",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/24",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/13",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/25",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/26",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/14",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/27",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/28",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/15",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/29",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/30",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/16",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/31",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/32",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/17",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/33",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/34",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/18",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/35",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/36",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/19",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/37",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/38",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/20",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/39",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/40",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/21",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/41",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/42",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/22",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/43",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/44",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/23",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/45",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/46",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/24",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/47",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/48",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/25",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/49",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/50",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/26",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/51",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/52",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/27",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/53",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/54",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/28",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/55",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/56",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/29",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/57",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/58",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/30",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/59",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/60",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/31",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/61",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/62",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                },
+                {
+                    "id": "port-group1/1/32",
+                    "profile": "unrestricted",
+                    "port": [
+                        {
+                            "port-id": "phy-eth1/1/63",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        },
+                        {
+                            "port-id": "phy-eth1/1/64",
+                            "phy-mode": "ETHERNET",
+                            "breakout-mode": "BREAKOUT_1x1",
+                            "port-speed": "100GIGE"
+                        }
+                    ]
+                }
+            ]
+        },
+        "dell-port:ports": {
+            "port": [
+                {
+                    "name": "phy-eth1/1/1",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/2",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/3",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/4",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/5",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/6",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/7",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/8",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/9",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/10",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/11",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/12",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/13",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/14",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/15",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/16",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/17",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/18",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/19",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/20",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/21",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/22",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/23",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/24",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/25",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/26",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/27",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/28",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/29",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/30",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/31",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/32",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/33",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/34",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/35",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/36",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/37",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/38",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/39",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/40",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/41",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/42",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/43",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/44",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/45",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/46",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/47",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/48",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/49",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/50",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/51",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/52",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/53",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/54",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/55",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/56",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/57",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/58",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/59",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/60",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/61",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/62",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/63",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/64",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/65",
+                    "breakout-mode": "DISABLED"
+                },
+                {
+                    "name": "phy-eth1/1/66",
+                    "breakout-mode": "DISABLED"
+                }
+            ]
+        },
+        "dell-rest:rest": {
+            "rest-interfaces": [
+                "restconf"
+            ],
+            "https": {
+                "cipher-suite": [
+                    "dhe-rsa-with-aes-128-gcm-SHA256",
+                    "dhe-rsa-with-aes-256-gcm-SHA384",
+                    "ecdhe-rsa-with-aes-256-gcm-SHA384"
+                ],
+                "server-certificate-server-name": "os10-1",
+                "session-timeout": 60
+            }
+        },
+        "dell-routing:routing": {
+            "instance": [
+                {
+                    "vrf-name": "default"
+                }
+            ]
+        },
+        "dell-snmp:snmp-server": {
+            "global": {
+                "sys-contact": "Contact Support"
+            }
+        },
+        "dell-system:system": {
+            "hostname": "pd99-esp-001",
+            "system-user": [
+                {
+                    "name": "linuxadmin",
+                    "password": "****"
+                }
+            ],
+            "user": [
+                {
+                    "name": "admin",
+                    "password": "****",
+                    "group": "sysadmin",
+                    "privilege-level": 15
+                }
+            ],
+            "telnet": {
+                "telnet-server": true
+            }
+        },
+        "openconfig-telemetry:telemetry-system": {
+            "sensor-groups": {
+                "sensor-group": [
+                    {
+                        "sensor-group-id": "bgp",
+                        "config": {
+                            "sensor-group-id": "bgp"
+                        },
+                        "sensor-paths": {
+                            "sensor-path": [
+                                {
+                                    "path": "bgp/bgp-oper/bgpPrfxCntrsEntry",
+                                    "config": {
+                                        "path": "bgp/bgp-oper/bgpPrfxCntrsEntry"
+                                    }
+                                },
+                                {
+                                    "path": "bgp/bgp-oper/bgpPeerCount",
+                                    "config": {
+                                        "path": "bgp/bgp-oper/bgpPeerCount"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "sensor-group-id": "bgp-peer",
+                        "config": {
+                            "sensor-group-id": "bgp-peer"
+                        },
+                        "sensor-paths": {
+                            "sensor-path": [
+                                {
+                                    "path": "infra-bgp/peer-state/peer-status",
+                                    "config": {
+                                        "path": "infra-bgp/peer-state/peer-status"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "sensor-group-id": "buffer",
+                        "config": {
+                            "sensor-group-id": "buffer"
+                        },
+                        "sensor-paths": {
+                            "sensor-path": [
+                                {
+                                    "path": "base-qos/queue-stat",
+                                    "config": {
+                                        "path": "base-qos/queue-stat"
+                                    }
+                                },
+                                {
+                                    "path": "base-qos/priority-group-stat",
+                                    "config": {
+                                        "path": "base-qos/priority-group-stat"
+                                    }
+                                },
+                                {
+                                    "path": "base-qos/buffer-pool-stat",
+                                    "config": {
+                                        "path": "base-qos/buffer-pool-stat"
+                                    }
+                                },
+                                {
+                                    "path": "base-qos/buffer-pool",
+                                    "config": {
+                                        "path": "base-qos/buffer-pool"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "sensor-group-id": "device",
+                        "config": {
+                            "sensor-group-id": "device"
+                        },
+                        "sensor-paths": {
+                            "sensor-path": [
+                                {
+                                    "path": "base-pas/chassis",
+                                    "config": {
+                                        "path": "base-pas/chassis"
+                                    }
+                                },
+                                {
+                                    "path": "base-pas/card",
+                                    "config": {
+                                        "path": "base-pas/card"
+                                    }
+                                },
+                                {
+                                    "path": "base-switch/switching-entities/switch-stats",
+                                    "config": {
+                                        "path": "base-switch/switching-entities/switch-stats"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "sensor-group-id": "environment",
+                        "config": {
+                            "sensor-group-id": "environment"
+                        },
+                        "sensor-paths": {
+                            "sensor-path": [
+                                {
+                                    "path": "base-pas/entity",
+                                    "config": {
+                                        "path": "base-pas/entity"
+                                    }
+                                },
+                                {
+                                    "path": "base-pas/psu",
+                                    "config": {
+                                        "path": "base-pas/psu"
+                                    }
+                                },
+                                {
+                                    "path": "base-pas/fan-tray",
+                                    "config": {
+                                        "path": "base-pas/fan-tray"
+                                    }
+                                },
+                                {
+                                    "path": "base-pas/fan",
+                                    "config": {
+                                        "path": "base-pas/fan"
+                                    }
+                                },
+                                {
+                                    "path": "base-pas/led",
+                                    "config": {
+                                        "path": "base-pas/led"
+                                    }
+                                },
+                                {
+                                    "path": "base-pas/temperature",
+                                    "config": {
+                                        "path": "base-pas/temperature"
+                                    }
+                                },
+                                {
+                                    "path": "base-pas/temp_threshold",
+                                    "config": {
+                                        "path": "base-pas/temp_threshold"
+                                    }
+                                },
+                                {
+                                    "path": "base-pas/media",
+                                    "config": {
+                                        "path": "base-pas/media"
+                                    }
+                                },
+                                {
+                                    "path": "base-pas/media-channel",
+                                    "config": {
+                                        "path": "base-pas/media-channel"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "sensor-group-id": "interface",
+                        "config": {
+                            "sensor-group-id": "interface"
+                        },
+                        "sensor-paths": {
+                            "sensor-path": [
+                                {
+                                    "path": "if/interfaces-state/interface/statistics",
+                                    "config": {
+                                        "path": "if/interfaces-state/interface/statistics"
+                                    }
+                                },
+                                {
+                                    "path": "dell-base-if-cmn/if/interfaces-state/interface",
+                                    "config": {
+                                        "path": "dell-base-if-cmn/if/interfaces-state/interface"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "sensor-group-id": "lag",
+                        "config": {
+                            "sensor-group-id": "lag"
+                        },
+                        "sensor-paths": {
+                            "sensor-path": [
+                                {
+                                    "path": "dell-base-if-cmn/if/interfaces",
+                                    "config": {
+                                        "path": "dell-base-if-cmn/if/interfaces"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "sensor-group-id": "system",
+                        "config": {
+                            "sensor-group-id": "system"
+                        },
+                        "sensor-paths": {
+                            "sensor-path": [
+                                {
+                                    "path": "system-status/current-status",
+                                    "config": {
+                                        "path": "system-status/current-status"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "sensor-group-id": "oc-bfd",
+                        "config": {
+                            "sensor-group-id": "oc-bfd"
+                        },
+                        "sensor-paths": {
+                            "sensor-path": [
+                                {
+                                    "path": "openconfig-bfd/bfd",
+                                    "config": {
+                                        "path": "openconfig-bfd/bfd"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "sensor-group-id": "oc-bgp",
+                        "config": {
+                            "sensor-group-id": "oc-bgp"
+                        },
+                        "sensor-paths": {
+                            "sensor-path": [
+                                {
+                                    "path": "openconfig-network-instance/network-instances/network-instance/protocols/protocol/bgp/neighbors/neighbor",
+                                    "config": {
+                                        "path": "openconfig-network-instance/network-instances/network-instance/protocols/protocol/bgp/neighbors/neighbor"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "sensor-group-id": "oc-bgp-rib",
+                        "config": {
+                            "sensor-group-id": "oc-bgp-rib"
+                        },
+                        "sensor-paths": {
+                            "sensor-path": [
+                                {
+                                    "path": "openconfig-network-instance/network-instances/network-instance/protocols/protocol/bgp/rib/afi-safis/afi-safi",
+                                    "config": {
+                                        "path": "openconfig-network-instance/network-instances/network-instance/protocols/protocol/bgp/rib/afi-safis/afi-safi"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "sensor-group-id": "oc-buffer",
+                        "config": {
+                            "sensor-group-id": "oc-buffer"
+                        },
+                        "sensor-paths": {
+                            "sensor-path": [
+                                {
+                                    "path": "openconfig-qos/qos/interfaces/interface",
+                                    "config": {
+                                        "path": "openconfig-qos/qos/interfaces/interface"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "sensor-group-id": "oc-device",
+                        "config": {
+                            "sensor-group-id": "oc-device"
+                        },
+                        "sensor-paths": {
+                            "sensor-path": [
+                                {
+                                    "path": "openconfig-platform/components/component",
+                                    "config": {
+                                        "path": "openconfig-platform/components/component"
+                                    }
+                                },
+                                {
+                                    "path": "openconfig-network-instance/network-instances/network-instance",
+                                    "config": {
+                                        "path": "openconfig-network-instance/network-instances/network-instance"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "sensor-group-id": "oc-environment",
+                        "config": {
+                            "sensor-group-id": "oc-environment"
+                        },
+                        "sensor-paths": {
+                            "sensor-path": [
+                                {
+                                    "path": "openconfig-platform/components/component",
+                                    "config": {
+                                        "path": "openconfig-platform/components/component"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "sensor-group-id": "oc-interface",
+                        "config": {
+                            "sensor-group-id": "oc-interface"
+                        },
+                        "sensor-paths": {
+                            "sensor-path": [
+                                {
+                                    "path": "openconfig-interfaces/interfaces/interface",
+                                    "config": {
+                                        "path": "openconfig-interfaces/interfaces/interface"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "sensor-group-id": "oc-lacp",
+                        "config": {
+                            "sensor-group-id": "oc-lacp"
+                        },
+                        "sensor-paths": {
+                            "sensor-path": [
+                                {
+                                    "path": "openconfig-lacp/lacp",
+                                    "config": {
+                                        "path": "openconfig-lacp/lacp"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "sensor-group-id": "oc-lag",
+                        "config": {
+                            "sensor-group-id": "oc-lag"
+                        },
+                        "sensor-paths": {
+                            "sensor-path": [
+                                {
+                                    "path": "openconfig-interfaces/interfaces/interface",
+                                    "config": {
+                                        "path": "openconfig-interfaces/interfaces/interface"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "sensor-group-id": "oc-lldp",
+                        "config": {
+                            "sensor-group-id": "oc-lldp"
+                        },
+                        "sensor-paths": {
+                            "sensor-path": [
+                                {
+                                    "path": "openconfig-lldp/lldp",
+                                    "config": {
+                                        "path": "openconfig-lldp/lldp"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "sensor-group-id": "oc-stp",
+                        "config": {
+                            "sensor-group-id": "oc-stp"
+                        },
+                        "sensor-paths": {
+                            "sensor-path": [
+                                {
+                                    "path": "openconfig-spanning-tree/stp",
+                                    "config": {
+                                        "path": "openconfig-spanning-tree/stp"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "sensor-group-id": "oc-system",
+                        "config": {
+                            "sensor-group-id": "oc-system"
+                        },
+                        "sensor-paths": {
+                            "sensor-path": [
+                                {
+                                    "path": "openconfig-system/system",
+                                    "config": {
+                                        "path": "openconfig-system/system"
+                                    }
+                                },
+                                {
+                                    "path": "openconfig-platform/components/component",
+                                    "config": {
+                                        "path": "openconfig-platform/components/component"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "sensor-group-id": "oc-vendor-ufd",
+                        "config": {
+                            "sensor-group-id": "oc-vendor-ufd"
+                        },
+                        "sensor-paths": {
+                            "sensor-path": [
+                                {
+                                    "path": "ufd/uplink-state-group-stats/ufd-groups",
+                                    "config": {
+                                        "path": "ufd/uplink-state-group-stats/ufd-groups"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "sensor-group-id": "oc-vxlan",
+                        "config": {
+                            "sensor-group-id": "oc-vxlan"
+                        },
+                        "sensor-paths": {
+                            "sensor-path": [
+                                {
+                                    "path": "openconfig-vxlan/vxlan/state/vxlan-tunnel-infos",
+                                    "config": {
+                                        "path": "openconfig-vxlan/vxlan/state/vxlan-tunnel-infos"
+                                    }
+                                },
+                                {
+                                    "path": "openconfig-network-instance/network-instances/network-instance",
+                                    "config": {
+                                        "path": "openconfig-network-instance/network-instances/network-instance"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "sensor-group-id": "oc-vlan",
+                        "config": {
+                            "sensor-group-id": "oc-vlan"
+                        },
+                        "sensor-paths": {
+                            "sensor-path": [
+                                {
+                                    "path": "openconfig-interfaces/interfaces/interface",
+                                    "config": {
+                                        "path": "openconfig-interfaces/interfaces/interface"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "sensor-group-id": "oc-vrrp",
+                        "config": {
+                            "sensor-group-id": "oc-vrrp"
+                        },
+                        "sensor-paths": {
+                            "sensor-path": [
+                                {
+                                    "path": "openconfig-interfaces/interfaces/interface/subinterfaces/subinterface",
+                                    "config": {
+                                        "path": "openconfig-interfaces/interfaces/interface/subinterfaces/subinterface"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "dell-vrf:vrf-config": {
+            "vrf": [
+                {
+                    "vrf-name": "default"
+                }
+            ]
+        },
+        "dell-wred:wred-prof": [
+            {
+                "name": "s"
+            }
+        ]
+    }
+}

@@ -1,0 +1,11 @@
+- collections:
+  - dellemc.os10
+  connection: network_cli
+  gather_facts: false
+  hosts:
+  - leaf_spine
+  tasks:
+    - name: "Copy configuration"
+      os10_command:
+        commands:
+          - copy running-configuration tftp://192.168.211.224/{{ inventory_hostname }}.cfg

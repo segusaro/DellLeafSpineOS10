@@ -18,9 +18,16 @@ os10_bgp:
     name: spine-leaf
     timer: 3 9
     type: peergroup
+    send_community:
+      - type: standard
+        state: present
     address_family:
     - allow_as_in: 1
       type: ipv4
+      route_map:
+        - name: spine-leaf
+          filter: out
+          state: present
   - ip: 169.254.35.0
     admin: up  
     description: pd99-esp-001
@@ -41,9 +48,14 @@ os10_bgp:
     adv_interval: 1
     fall_over: present
     timer: 3 9
+    address_family:
+    - type: ipv4
+      route_map:
+        - name: spine-leaf
+          filter: out
+          state: present
   redistribute:
   - address_type: ipv4
-    route_map_name: spine-leaf
     route_type: connected
   router_id: 10.99.0.5
 os10_interface:
@@ -115,7 +127,10 @@ os10_bfd:
   bfd:
     state: present
 os10_prefix_list:
-- entries:
+- name: spine-leaf
+  state: present
+  type: ipv4
+  entries:
   - condition_list:
     - condition: ge
       prelen: '24'
@@ -140,17 +155,38 @@ os10_prefix_list:
     number: 30
     permit: true
     state: present
-  name: spine-leaf
+- name: v3133
   state: present
   type: ipv4
+  entries:
+  - condition_list:
+    - condition: ge
+      prelen: '24'
+    - condition: le
+      prelen: '24'
+    mask: '16'
+    net_num: 172.20.0.0
+    number: 10
+    permit: true
+    state: present
 os10_route_map:
   route_map:
-  - match:
-    - ip_type: ipv4
-      prefix_list: spine-leaf
-    name: spine-leaf
+  - name: spine-leaf
     permit: true
     seq_num: 10
+    match:
+    - ip_type: ipv4
+      prefix_list: spine-leaf
+    set:
+      community: "65000:0"
+  - name: spine-leaf
+    permit: true
+    seq_num: 20
+    match:
+    - ip_type: ipv4
+      prefix_list: v3133
+    set:
+      community: "65000:9"
 os10_vlan:
   Vlan 20:
     description: compute server 2
